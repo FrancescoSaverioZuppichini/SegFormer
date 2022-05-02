@@ -1,6 +1,5 @@
 # Implementing SegFormer in PyTorch
-*An fast, efficient and lightweight model for image segmentation*
-
+*A fast, efficient, and lightweight model for image segmentation*
 
 Hello There!! Today we'll see how to implement SegFormer in PyTorch proposed in [SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers](https://arxiv.org/abs/2105.15203).
 
@@ -30,7 +29,7 @@ We are going to implement it in a bottom-up approach, starting from the lowest m
 
 **The image in the paper is wrong** 🤦, I don't understand why any reviewers pointed that out, maybe I am wrong. In the official [implementation](https://github.com/NVlabs/SegFormer/blob/master/mmseg/models/backbones/mix_transformer.py) there isn't a first patch embedding. The overlapping patch merging block (the purple one) should be before the Self-Efficient Attention block.
 
-This is how it should look like:
+Here's what it should look like:
 
 <img src="./images/architecture_fixed.png"></img>
 
@@ -113,7 +112,7 @@ x = rearrange(x, "b (h w) c -> b c h w", h=h//half_r) # shape = [1, 8, 32, 32]
 
 We have reduced the spatial size by `r=4`, so by `2` on each dimension (`height` and `width`). If you think about it, you can use a convolution layer with a `kernel_size=r` and a `stride=r` to achieve the same effect. 
 
-Since the attention is equal to `softmax((QK^T/scale)V)`, we need to compute `K` and `V` using the reduced tensor otherwise shape won't match. `Q \in NxC, K \in (N/R)xC, V \in (N/R)xC`, we can use PyTorch's `MultiheadAttention` to compute the attention.
+Since the attention is equal to `softmax((QK^T/scale)V)`, we need to compute `K` and `V` using the reduced tensor otherwise, shapes won't match. `Q \in NxC, K \in (N/R)xC, V \in (N/R)xC`, we can use PyTorch's `MultiheadAttention` to compute the attention.
 
 
 ```python
